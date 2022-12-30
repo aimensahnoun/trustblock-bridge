@@ -113,4 +113,26 @@ contract TokenFactory is Ownable {
         // Minting the tokens
         WrapperToken(tokenAddress).mint(_to, _amount);
     }
+
+    /// @notice Burns tokens for a given address
+    /// @param _tokenAddress The address of the token to burn
+    /// @param _from The address to burn the tokens from
+    /// @param _amount The amount of tokens to burn
+    /// @return True if the tokens were burned successfully 
+    function burn(
+        address _tokenAddress,
+        address _from,
+        uint256 _amount
+    )
+        external
+        onlyOwner
+        onlyValidAddress(_tokenAddress)
+        onlyValidAddress(_from)
+        onlyValidAmount(_amount)
+        returns (bool)
+    {
+        // Burning the tokens
+        WrapperToken(_tokenAddress).burnFrom(_from, _amount);
+        return true;
+    }
 }
