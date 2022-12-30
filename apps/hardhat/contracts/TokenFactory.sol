@@ -118,7 +118,7 @@ contract TokenFactory is Ownable {
     /// @param _tokenAddress The address of the token to burn
     /// @param _from The address to burn the tokens from
     /// @param _amount The amount of tokens to burn
-    /// @return True if the tokens were burned successfully 
+    /// @return True if the tokens were burned successfully
     function burn(
         address _tokenAddress,
         address _from,
@@ -135,6 +135,10 @@ contract TokenFactory is Ownable {
         WrapperToken(_tokenAddress).burnFrom(_from, _amount);
         return true;
     }
+
+    function getWERC20(
+        string calldata _symbol
+    ) public view onlyValidSymbol(_symbol) returns (address) {
+        return tokenAddresses[_symbol];
+    }
 }
-
-
