@@ -136,9 +136,32 @@ contract TokenFactory is Ownable {
         return true;
     }
 
+    /// @notice Gets the address of a WrapperToken contract for a given token symbol
+    /// @param _symbol The symbol of the token
+    /// @return The address of the WrapperToken contract
     function getWERC20(
         string calldata _symbol
     ) public view onlyValidSymbol(_symbol) returns (address) {
         return tokenAddresses[_symbol];
+    }
+
+    /// @notice Gets the balance of a given address for a given token symbol
+    /// @param _symbol The symbol of the token
+    /// @param _account The address to get the balance of
+    /// @return The balance of the given address
+    function balanceOf(
+        string calldata _symbol,
+        address _account
+    )
+        external
+        view
+        onlyValidSymbol(_symbol)
+        onlyValidAddress(_account)
+        returns (uint256)
+    {
+        address wrappedToken = getWERC20(_symbol);
+        if (wrappedToken == address(0))
+            revert TokenFactory__TokenDoesNotExist(_symbol);
+        return WrapperToken(wrappedToken).balanceOf(_account);
     }
 }
