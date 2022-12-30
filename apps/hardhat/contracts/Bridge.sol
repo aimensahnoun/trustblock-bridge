@@ -6,6 +6,9 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 
 error Bridge__CannotUseZeroAddress();
 error Bridge__FundsCannotBeZero();
+error Bridge__NotAllowedToDoThisAction();
+error Bridge__TokenSymbolCannotBeEmpty();
+error Bridge__TokenNameCannotBeEmpty();
 
 /// @title A contract for bridging tokens between chains
 /// @author Aimen Sahnoun
@@ -52,6 +55,13 @@ contract Bridge is AccessControl {
         _;
     }
 
+    /// @notice a modifier to check if the caller is a relayer
+    modifier onlyAllowed() {
+        if (!hasRole(RELAYER, msg.sender))
+            revert Bridge__NotAllowedToDoThisAction();
+        _;
+    }
+
     /// @notice a mapping that stores the native token address for each wrapped token
     /// @dev mapping (address wrapperTokenAddress => address nativeTokenAddress)
     mapping(address => address) public wrappedToNative;
@@ -83,5 +93,46 @@ contract Bridge is AccessControl {
             _amount,
             block.timestamp
         );
+    }
+
+    function mintToken(
+        string calldata _symbol,
+        string calldata _tokenName,
+        address _to,
+        address _tokenAddress,
+        uint256 _amount
+    )
+        external
+        onlyValidAddress(_to)
+        onlyValidAddress(_tokenAddress)
+        onlyValidAmount(_amount)
+        onlyAllowed
+    {
+        if (keccak256(bytes(_symbol)) == keccak256(bytes(""))) {
+            revert Bridge__TokenSymbolCannotBeEmpty();
+        }
+
+        if (keccak256(bytes(_tokenName)) == keccak256(bytes(""))) {
+            revert Bridge__TokenNameCannotBeEmpty();
+        }
+
+        string memory tokenSymbol = string.concat("W", _symbol);
+        address werc20 = tokenFactory.getWERC20(tokenSymbol);
+        if (werc20 == address(0)) {
+            werc20 = tokenFactory.createWrapperToken(_tokenName, tokenSymbol);
+            wrappedToNative[werc20] = _tokenAddress;
+        }
+
+        tokenFactory.mint(tokenSymbol, _to, _amount);
+
+        // emit TokenMinted(
+        //     _to,
+        //     werc20,
+        //     _amount,
+        //     block.chainid,
+        //     block.timestamp,
+        //     tokenSymbol,
+        //     _tokenName
+        // );
     }
 }
