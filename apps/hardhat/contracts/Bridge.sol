@@ -9,6 +9,8 @@ error Bridge__FundsCannotBeZero();
 error Bridge__NotAllowedToDoThisAction();
 error Bridge__TokenSymbolCannotBeEmpty();
 error Bridge__TokenNameCannotBeEmpty();
+error Bridge__WrappedTokenDoesNotExist();
+error Bridge__InsufficientBalance();
 
 /// @title A contract for bridging tokens between chains
 /// @author Aimen Sahnoun
@@ -36,6 +38,23 @@ contract Bridge is AccessControl {
         uint256 sourceChainId,
         uint256 indexed targetChainId,
         uint256 amount,
+        uint256 timestamp
+    );
+
+    event TokenMinted(
+        address indexed user,
+        address tokenAddress,
+        uint256 amount,
+        uint256 indexed chainId,
+        uint256 timestamp,
+        string indexed tokenSymbol
+    );
+
+    event BurnedToken(
+        address indexed user,
+        address tokenAddress,
+        uint256 amount,
+        uint256 indexed chainId,
         uint256 timestamp
     );
 
@@ -131,14 +150,48 @@ contract Bridge is AccessControl {
 
         tokenFactory.mint(tokenSymbol, _to, _amount);
 
-        // emit TokenMinted(
-        //     _to,
-        //     werc20,
-        //     _amount,
-        //     block.chainid,
-        //     block.timestamp,
-        //     tokenSymbol,
-        //     _tokenName
-        // );
+        emit TokenMinted(
+            _to,
+            werc20,
+            _amount,
+            block.chainid,
+            block.timestamp,
+            tokenSymbol
+        );
+    }
+
+    /// @notice a method to burn wrapped tokens.
+    /// @param _symbol the symbol of the token to be burned.
+    /// @param _amount the amount of tokens to be burned.
+    /// @param _user the address of the user who will burn the tokens.
+    /// @dev the event emmited by this function is used by the relayer to listen for new burns. Approve the bridge contract to burn the tokens before calling this function to avoid errors
+    function burnWrappedToken(
+        string calldata _symbol,
+        uint256 _amount,
+        address _user
+    ) external onlyValidAmount(_amount) onlyValidAddress(_user) {
+        if (keccak256(bytes(_symbol)) == keccak256(bytes(""))) {
+            revert Bridge__TokenSymbolCannotBeEmpty();
+        }
+
+        address werc20 = tokenFactory.getWERC20(_symbol);
+        if (werc20 == address(0)) {
+            revert Bridge__WrappedTokenDoesNotExist();
+        }
+
+        uint256 userBalance = tokenFactory.balanceOf(_symbol, msg.sender);
+        if (userBalance < _amount) {
+            revert Bridge__InsufficientBalance();
+        }
+
+        tokenFactory.burn(werc20, _user, _amount);
+
+        emit BurnedToken(
+            _user,
+            werc20,
+            _amount,
+            block.chainid,
+            block.timestamp
+        );
     }
 }
