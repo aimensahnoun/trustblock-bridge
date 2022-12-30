@@ -95,6 +95,12 @@ contract Bridge is AccessControl {
         );
     }
 
+    ///@notice a method to mint wrapped tokens for the user on the target network.
+    /// @param _symbol the symbol of the token to be bridged.
+    /// @param _tokenName the name of the token to be bridged.
+    /// @param _to the address of the user who will receive the wrapped tokens.
+    /// @param _tokenAddress the address of the token to be bridged, note that native tokens will have the same address on all networks address(1).
+    /// @param _amount the amount of tokens to be bridged.
     function mintToken(
         string calldata _symbol,
         string calldata _tokenName,
