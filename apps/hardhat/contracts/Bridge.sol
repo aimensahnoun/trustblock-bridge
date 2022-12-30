@@ -58,6 +58,14 @@ contract Bridge is AccessControl {
         uint256 timestamp
     );
 
+    event UnWrappedToken(
+        address indexed user,
+        address nativeTokenAddress,
+        uint256 amount,
+        uint256 indexed chainId,
+        uint256 timestamp
+    );
+
     // Modifiers
 
     /// @notice a modifier to check if the address is not zero
@@ -189,6 +197,39 @@ contract Bridge is AccessControl {
         emit BurnedToken(
             _user,
             werc20,
+            _amount,
+            block.chainid,
+            block.timestamp
+        );
+    }
+
+    /// @notice a method to return the native token address for a given wrapped token address
+    /// @param _to the address of the user who will receive the native tokens
+    /// @param _nativeTokenAddress the address of the native token to be unwrapped, note that native tokens will have the same address on all networks address(1).
+    /// @param _amount the amount of tokens to be unwrapped
+    function unWrapToken(
+        address _to,
+        address _nativeTokenAddress,
+        uint256 _amount
+    )
+        external
+        onlyValidAddress(_to)
+        onlyValidAddress(_nativeTokenAddress)
+        onlyValidAmount(_amount)
+        onlyAllowed
+    {
+        /// @dev if the native token address is address(1) then the token is native and will be sent to the user as native tokens
+        bool isNativeToken = _nativeTokenAddress == address(1);
+
+        if (isNativeToken) {
+            payable(_to).transfer(_amount);
+        } else {
+            IERC20(_nativeTokenAddress).transfer(_to, _amount);
+        }
+
+        emit UnWrappedToken(
+            _to,
+            isNativeToken == true ? address(1) : _nativeTokenAddress,
             _amount,
             block.chainid,
             block.timestamp
