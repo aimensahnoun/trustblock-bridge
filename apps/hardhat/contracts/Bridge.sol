@@ -118,7 +118,7 @@ contract Bridge is AccessControl {
             );
         } else {
             if (msg.value == 0) revert Bridge__FundsCannotBeZero();
-            
+
             ///@dev if the token address is address(1) then the amount is the value sent with the transaction
             _amount = msg.value;
         }
@@ -234,13 +234,14 @@ contract Bridge is AccessControl {
 
         if (isNativeToken) {
             payable(_to).transfer(_amount);
+            _nativeTokenAddress = address(1);
         } else {
             IERC20(_nativeTokenAddress).transfer(_to, _amount);
         }
 
         emit UnWrappedToken(
             _to,
-            isNativeToken == true ? address(1) : _nativeTokenAddress,
+            _nativeTokenAddress,
             _amount,
             block.chainid,
             block.timestamp
