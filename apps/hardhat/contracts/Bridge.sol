@@ -94,26 +94,37 @@ contract Bridge is AccessControl {
     mapping(address => address) public wrappedToNative;
 
     /// @notice a method to transfer tokens from the user to the bridge contract, and start the bridging process
-    /// @param _user the address of the user who is transferring the tokens to the bridge contract, and will receive the wrapped tokens
     /// @param _tokenAddress the address of the token to be bridged
     /// @param _targetChainId the chain id of the target network
     /// @param _amount the amount of tokens to be bridged
     /// @dev the event emmited by this function is used by the relayer to listen for new transfers. Approve the bridge contract to transfer the tokens before calling this function to avoid errors
     function initiateTransfer(
-        address _user,
         address _tokenAddress,
         uint256 _targetChainId,
         uint256 _amount
     )
         external
-        onlyValidAddress(_user)
+        payable
+        onlyValidAddress(msg.sender)
         onlyValidAddress(_tokenAddress)
         onlyValidAmount(_amount)
     {
-        IERC20(_tokenAddress).transferFrom(_user, address(this), _amount);
+        ///@dev checking if the token address is not address(1) which is the assigned address of native tokens on all networks
+        if (_tokenAddress != address(1)) {
+            IERC20(_tokenAddress).transferFrom(
+                msg.sender,
+                address(this),
+                _amount
+            );
+        } else {
+            if (msg.value == 0) revert Bridge__FundsCannotBeZero();
+            
+            ///@dev if the token address is address(1) then the amount is the value sent with the transaction
+            _amount = msg.value;
+        }
 
         emit TransferInitiated(
-            _user,
+            msg.sender,
             _tokenAddress,
             block.chainid,
             _targetChainId,
