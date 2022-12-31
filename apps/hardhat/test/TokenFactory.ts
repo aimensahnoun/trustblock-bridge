@@ -30,13 +30,13 @@ describe("Testing ERC20 Factory Contract", function () {
     it("Should revert if passed an empty string for symbol", async () => {
       await expect(
         factory.createWrapperToken("Aimen Snoun", "")
-      ).to.be.revertedWithCustomError(factory, "WERC20Factory__EmptySymbol");
+      ).to.be.revertedWithCustomError(factory, "TokenFactory__SymbolCannotBeEmpty");
     });
 
     it("Should revert if passed an empty string for name", async () => {
       await expect(
         factory.createWrapperToken("", "AIM")
-      ).to.be.revertedWithCustomError(factory, "WERC20Factory__EmptyName");
+      ).to.be.revertedWithCustomError(factory, "TokenFactory__NameCannotBeEmpty");
     });
 
     it("Should revert if a token with the same symbol already exists", async () => {
@@ -45,7 +45,7 @@ describe("Testing ERC20 Factory Contract", function () {
         factory.createWrapperToken("Aimen Snoun", "AIM")
       ).to.be.revertedWithCustomError(
         factory,
-        "WERC20Factory__TokenAlreadyExists"
+        "TokenFactory__TokenAlreadyExists"
       );
     });
 
@@ -79,14 +79,14 @@ describe("Testing ERC20 Factory Contract", function () {
         factory.mint("TST", ethers.constants.AddressZero, 100)
       ).to.be.revertedWithCustomError(
         factory,
-        "WERC20Factory__CannotPassZeroAddress"
+        "TokenFactory__InvalidAddress"
       );
     });
 
     it("Should revert if symbol is empty string", async () => {
       await expect(
         factory.mint("", accounts[0].address, 100)
-      ).to.be.revertedWithCustomError(factory, "WERC20Factory__EmptySymbol");
+      ).to.be.revertedWithCustomError(factory, "TokenFactory__SymbolCannotBeEmpty");
     });
 
     it("Should revert if amount is zero", async () => {
@@ -94,7 +94,7 @@ describe("Testing ERC20 Factory Contract", function () {
         factory.mint("TST", accounts[0].address, 0)
       ).to.be.revertedWithCustomError(
         factory,
-        "WERC20Factory__AmountCannotBeZoro"
+        "TokenFactory__InvalidAmount"
       );
     });
 
@@ -103,7 +103,7 @@ describe("Testing ERC20 Factory Contract", function () {
         factory.mint("AIM", accounts[0].address, 100)
       ).to.be.revertedWithCustomError(
         factory,
-        "WERC20Factory__TokenDoesNotExist"
+        "TokenFactory__TokenDoesNotExist"
       );
     });
 
@@ -125,7 +125,7 @@ describe("Testing ERC20 Factory Contract", function () {
     it("should revert if checking blance with empty string as a symbol", async () => {
       await expect(
         factory.balanceOf("", accounts[0].address)
-      ).to.be.revertedWithCustomError(factory, "WERC20Factory__EmptySymbol");
+      ).to.be.revertedWithCustomError(factory, "TokenFactory__SymbolCannotBeEmpty");
     });
 
     it("should revert if checking blance with non-existing token", async () => {
@@ -133,7 +133,7 @@ describe("Testing ERC20 Factory Contract", function () {
         factory.balanceOf("AIM", accounts[0].address)
       ).to.be.revertedWithCustomError(
         factory,
-        "WERC20Factory__TokenDoesNotExist"
+        "TokenFactory__TokenDoesNotExist"
       );
     });
   });
@@ -150,7 +150,7 @@ describe("Testing ERC20 Factory Contract", function () {
         factory.burn(testErc20, ethers.constants.AddressZero, 100)
       ).to.be.revertedWithCustomError(
         factory,
-        "WERC20Factory__CannotPassZeroAddress"
+        "TokenFactory__InvalidAddress"
       );
     });
 
@@ -159,7 +159,7 @@ describe("Testing ERC20 Factory Contract", function () {
         factory.burn(ethers.constants.AddressZero, accounts[0].address, 100)
       ).to.be.revertedWithCustomError(
         factory,
-        "WERC20Factory__CannotPassZeroAddress"
+        "TokenFactory__InvalidAddress"
       );
     });
 
@@ -168,7 +168,7 @@ describe("Testing ERC20 Factory Contract", function () {
         factory.burn(testErc20, accounts[0].address, 0)
       ).to.be.revertedWithCustomError(
         factory,
-        "WERC20Factory__AmountCannotBeZoro"
+        "TokenFactory__InvalidAmount"
       );
     });
 
