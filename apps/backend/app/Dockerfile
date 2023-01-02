@@ -1,3 +1,4 @@
+# From latest node image
 FROM node:latest
 
 RUN npm i npm@latest -g
