@@ -1,4 +1,4 @@
-const Queue = require("bull");
+import Queue from "bull";
 
 const eventQueue = new Queue("events", {
   redis: {
@@ -6,6 +6,12 @@ const eventQueue = new Queue("events", {
     host: process.env.REDIS_HOST,
   },
 });
+
+function main() {
+  console.log("Etherium Event Listener Started");
+}
+
+main();
 
 eventQueue.add({ name: "Aimen", age: 23 });
 
