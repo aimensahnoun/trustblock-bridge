@@ -1,0 +1,15 @@
+@mixin rounded($radius: 0.688rem) {
+  border-radius: $radius;
+}
+
+@mixin flex-container(
+  $direction: row,
+  $justify: space-between,
+  $align: center
+) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+  padding: 0 1.75rem;
+}

@@ -1,0 +1,34 @@
+// imports
+@import "variables";
+@import "main";
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: $font;
+  background-color: $background-color;
+  color: $text-color;
+  overflow-x: hidden;
+  overflow: scroll;
+}
+
+// Hiding scroll bars
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
