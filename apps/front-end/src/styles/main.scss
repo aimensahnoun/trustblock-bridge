@@ -6,6 +6,8 @@
   margin: 0 auto;
   width: 100vw;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
 
   .nav {
     max-width: 100%;
@@ -28,6 +30,69 @@
         border-radius: 50%;
         background-color: $title-color;
       }
+    }
+  }
+
+  .body {
+    margin: 2rem;
+    width: 75%;
+    @include flex-container(
+      $direction: column,
+      $justify: center,
+      $align: flex-start
+    );
+    align-self: center;
+    row-gap: 2rem;
+
+    .title {
+      font-weight: 800;
+      font-size: 2rem;
+    }
+  }
+
+  .action-container {
+    height: 12.25rem;
+    background-color: $container-color;
+    @include rounded;
+    @include flex-container($direction: row, $justify: flex-start);
+    padding: 0 2rem !important;
+    gap: .6rem;
+
+    .group {
+      @include flex-container(
+        $direction: column,
+        $justify: flex-start,
+        $align: flex-start
+      );
+      row-gap: 0.5rem;
+      padding: 0 !important;
+      .label {
+        font-weight: 800;
+        font-size: 1.25rem;
+      }
+
+      .input {
+        background-color: $container-color;
+        border: none;
+        border-bottom: 1px solid $text-color;
+        outline: none;
+        height: 5.75rem;
+        color: $text-color;
+        font-size: 4.375rem;
+        width: 100%;
+      }
+
+      .selector {
+        height: 5.75rem;
+        width: 9.125rem;
+        background-color: $accent-color;
+        cursor: pointer;
+        @include rounded(0.313rem);
+      }
+    }
+
+    :first-child {
+      width: 65%;
     }
   }
 }
