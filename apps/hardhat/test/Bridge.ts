@@ -181,19 +181,19 @@ describe("Testing Bridge Contract", function () {
   describe("Burn Wrapped Token", () => {
     it("Should revert if user is a zero address", async () => {
       await expect(
-        bridge.burnWrappedToken("TST", 100, ethers.constants.AddressZero)
+        bridge.burnWrappedToken("TST", 100, 5, ethers.constants.AddressZero)
       ).to.be.revertedWithCustomError(bridge, "Bridge__CannotUseZeroAddress");
     });
 
     it("Should revert if amount is zero", async () => {
       await expect(
-        bridge.burnWrappedToken("TST", 0, accounts[0].address)
+        bridge.burnWrappedToken("TST", 0, 5, accounts[0].address)
       ).to.be.revertedWithCustomError(bridge, "Bridge__FundsCannotBeZero");
     });
 
     it("Should revert if symbol is empty", async () => {
       await expect(
-        bridge.burnWrappedToken("", 100, accounts[0].address)
+        bridge.burnWrappedToken("", 100, 5, accounts[0].address)
       ).to.be.revertedWithCustomError(
         bridge,
         "Bridge__TokenSymbolCannotBeEmpty"
@@ -202,7 +202,7 @@ describe("Testing Bridge Contract", function () {
 
     it("Should revert if token does not exist", async () => {
       await expect(
-        bridge.burnWrappedToken("WTST", 100, accounts[0].address)
+        bridge.burnWrappedToken("WTST", 100, 5, accounts[0].address)
       ).to.be.revertedWithCustomError(
         bridge,
         "Bridge__WrappedTokenDoesNotExist"
@@ -219,7 +219,7 @@ describe("Testing Bridge Contract", function () {
       );
 
       await expect(
-        bridge.burnWrappedToken("WTST", 100, accounts[0].address)
+        bridge.burnWrappedToken("WTST", 100, 5, accounts[0].address)
       ).to.be.revertedWithCustomError(bridge, "Bridge__InsufficientBalance");
     });
 
@@ -246,7 +246,7 @@ describe("Testing Bridge Contract", function () {
       await werc20.approve(bridgeFactoryAddress, 100);
 
       await expect(
-        bridge.burnWrappedToken("WTST", 100, accounts[0].address)
+        bridge.burnWrappedToken("WTST", 100, 5, accounts[0].address)
       ).to.emit(bridge, "BurnedToken");
 
       const userBalance = await werc20.balanceOf(accounts[0].address);
