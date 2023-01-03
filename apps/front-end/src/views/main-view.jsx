@@ -2,15 +2,22 @@
 import Head from "next/head";
 
 // Dependencies import
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useNetwork } from "wagmi";
+import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
+import { useNetwork, useAccount } from "wagmi";
 
 // Components import
 import BridgeInput from "../pages/components/bridge-input";
 
+// Assets import
+import { AiOutlineArrowDown } from "react-icons/ai";
+
 const MainView = () => {
   // Wagmi hooks
   const { chain, chains } = useNetwork();
+  const { isConnected } = useAccount();
+
+  // Rainbowkit hooks
+  const { openConnectModal } = useConnectModal();
 
   const remainingChains = chains.filter((c) => c.id !== chain.id);
 
@@ -35,7 +42,16 @@ const MainView = () => {
         <span className="title">Crosschain Bridge</span>
 
         <BridgeInput label="From" chain={chain} />
+        <AiOutlineArrowDown className="arrow" />
         <BridgeInput label="To" chain={remainingChains[0]} />
+        <button
+          onClick={() => {
+            if (!isConnected) return openConnectModal();
+          }}
+          className="button"
+        >
+          {isConnected ? "Bridge" : "Connect your wallet"}
+        </button>
       </body>
     </main>
   );

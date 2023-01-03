@@ -6,7 +6,7 @@ export const chainInfo = {
     rpcUrl: process.env.NEXT_PUBLIC_GOERLI_RPC_URL,
     token: "ETH",
     tokenIcon:
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Ethereum_logo_2014.svg/471px-Ethereum_logo_2014.svg.png",
+      "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=024",
   },
   80001: {
     name: "Mumbai",

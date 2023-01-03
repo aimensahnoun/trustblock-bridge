@@ -50,6 +50,10 @@
     }
   }
 
+  .arrow {
+    font-size: 1.5rem;
+    align-self: center;
+  }
   .action-container {
     height: 12.25rem;
     background-color: $container-color;
@@ -90,17 +94,17 @@
         padding: 0 !important;
         @include rounded(0.313rem);
         @include flex-container($justify: center, $align: center);
-        gap:0.5rem;
+        gap: 0.5rem;
 
         img {
           height: 2.688rem;
           width: 2.688rem;
+          object-fit: fill;
         }
 
         span {
           font-weight: 700;
           font-size: 0.875rem;
-
         }
       }
     }
@@ -108,5 +112,17 @@
     :first-child {
       width: 65%;
     }
+  }
+
+  .button {
+    align-self: center;
+    min-width: 10.36rem;
+    height: 3.188rem;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    background-color: $accent-color;
+    color: $text-color;
+    @include rounded(0.313rem);
   }
 }
