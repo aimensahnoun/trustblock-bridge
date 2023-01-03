@@ -56,7 +56,7 @@ function main() {
 
       try {
         await handleMinting(data);
-        console.log("Event processed successfully | MUMBAI");
+        console.log("Event processed successfully | MUMBAI\n");
       } catch (e) {
         console.log(
           `Something went wrong while minting ${tokenAddress} for ${from} on ${targetChainId} : ${e}`
@@ -90,7 +90,7 @@ function main() {
 
       try {
         await handleBurn(data);
-        console.log("Event processed successfully | MUMBAI");
+        console.log("Event processed successfully | MUMBAI\n");
       } catch (e) {
         console.log(
           `Something went wrong while burning ${tokenAddress} for ${userInfo} on ${sourceChainId} : ${e}`
@@ -139,7 +139,7 @@ function main() {
 
       try {
         await handleMinting(data);
-        console.log("Event processed successfully | GOERLI");
+        console.log("Event processed successfully | GOERLI\n");
       } catch (e) {
         console.log(
           `Something went wrong while minting ${tokenAddress} for ${from} on ${targetChainId} : ${e}`
@@ -171,7 +171,16 @@ function main() {
         timestamp,
       };
 
-      console.table(data);
+      try {
+        await handleBurn(data);
+        console.log("Event processed successfully | GOERLI\n");
+      } catch (e) {
+        console.log(
+          `Something went wrong while burning ${tokenAddress} for ${userInfo} on ${sourceChainId} : ${e}`
+        );
+        // Add the event to the queue to be reprocessed
+        await eventQueue.add("burn", data);
+      }
     }
   );
 }
