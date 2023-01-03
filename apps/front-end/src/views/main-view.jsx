@@ -19,7 +19,7 @@ const MainView = () => {
   // Rainbowkit hooks
   const { openConnectModal } = useConnectModal();
 
-  const remainingChains = chains.filter((c) => c.id !== chain.id);
+  const remainingChains = chains.filter((c) => c?.id !== chain?.id);
 
   return (
     <main className="main-container">
