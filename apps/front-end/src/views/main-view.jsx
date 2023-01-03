@@ -3,11 +3,17 @@ import Head from "next/head";
 
 // Dependencies import
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useNetwork } from "wagmi";
 
 // Components import
 import BridgeInput from "../pages/components/bridge-input";
 
 const MainView = () => {
+  // Wagmi hooks
+  const { chain, chains } = useNetwork();
+
+  const remainingChains = chains.filter((c) => c.id !== chain.id);
+
   return (
     <main className="main-container">
       <Head>
@@ -28,8 +34,8 @@ const MainView = () => {
       <body className="body">
         <span className="title">Crosschain Bridge</span>
 
-        <BridgeInput label="From" />
-        <BridgeInput label="To" />
+        <BridgeInput label="From" chain={chain} />
+        <BridgeInput label="To" chain={remainingChains[0]} />
       </body>
     </main>
   );

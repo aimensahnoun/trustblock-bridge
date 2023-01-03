@@ -1,6 +1,7 @@
-const BridgeInput = ({
-    label,
-}) => {
+// Utils import
+import { chainInfo } from "../../utils/chain-info";
+
+const BridgeInput = ({ label, chain }) => {
   return (
     <div className="action-container">
       <div className="group">
@@ -15,7 +16,10 @@ const BridgeInput = ({
 
       <div className="group">
         <span className="label">Chain</span>
-        <div className="selector"></div>
+        <div className="selector">
+          <img src={chainInfo[chain?.id]?.tokenIcon} />
+          <span>{chainInfo[chain?.id]?.name}</span>
+        </div>
       </div>
     </div>
   );
