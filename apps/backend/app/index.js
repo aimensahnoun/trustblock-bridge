@@ -7,7 +7,8 @@ import dotenv from "dotenv";
 import { BridgeABI } from "./contract/contract-constants.js";
 
 // Methods imports
-import { handleMinting } from "./contract/event-methods.js";
+import { handleBurn, handleMinting } from "./contract/event-methods.js";
+import { chainInfo } from "./contract/chain-info.js";
 
 dotenv.config();
 
@@ -27,7 +28,7 @@ function main() {
 
   /// Connect to contract using the provider and the contract ABI (MUMBAI)
   const mumbaiContract = new ethers.Contract(
-    "0xA35Fff838182f6E47F6121Dfb236Ee3D90144ae8",
+    chainInfo[80001].contract,
     BridgeABI,
     mumbaiProvider
   );
@@ -55,7 +56,7 @@ function main() {
 
       try {
         await handleMinting(data);
-        console.log("Event processed successfully");
+        console.log("Event processed successfully | MUMBAI");
       } catch (e) {
         console.log(
           `Something went wrong while minting ${tokenAddress} for ${from} on ${targetChainId} : ${e}`
@@ -65,14 +66,134 @@ function main() {
       }
     }
   );
+
+  // Listen for BurnedToken event on Goerli
+  mumbaiContract.on(
+    "BurnedToken",
+    async (
+      userInfo,
+      tokenAddress,
+      amount,
+      sourceChainId,
+      targetChainId,
+      timestamp,
+      event
+    ) => {
+      const data = {
+        userInfo,
+        tokenAddress,
+        amount,
+        sourceChainId,
+        targetChainId,
+        timestamp,
+      };
+
+      try {
+        await handleBurn(data);
+        console.log("Event processed successfully | MUMBAI");
+      } catch (e) {
+        console.log(
+          `Something went wrong while burning ${tokenAddress} for ${userInfo} on ${sourceChainId} : ${e}`
+        );
+        // Add the event to the queue to be reprocessed
+        await eventQueue.add("burn", data);
+      }
+    }
+  );
+
+  // ================================================
+  // Handling goerli events
+  const goerliProvider = new ethers.providers.JsonRpcProvider(
+    process.env.GOERLI_RPC_URL
+  );
+
+  // Listen for InitiateTransfer event on Mumbai
+
+  /// Connect to contract using the provider and the contract ABI (GOERLI)
+  const goerliContract = new ethers.Contract(
+    chainInfo[5].contract,
+    BridgeABI,
+    goerliProvider
+  );
+
+  // Listen for InitiateTransfer event on Goerli
+  goerliContract.on(
+    "TransferInitiated",
+    async (
+      from,
+      tokenAddress,
+      sourceChainId,
+      targetChainId,
+      amount,
+      timestamp,
+      event
+    ) => {
+      const data = {
+        from,
+        tokenAddress,
+        sourceChainId,
+        targetChainId,
+        amount,
+        timestamp,
+      };
+
+      try {
+        await handleMinting(data);
+        console.log("Event processed successfully | GOERLI");
+      } catch (e) {
+        console.log(
+          `Something went wrong while minting ${tokenAddress} for ${from} on ${targetChainId} : ${e}`
+        );
+        // Add the event to the queue to be reprocessed
+        await eventQueue.add("mint", data);
+      }
+    }
+  );
+
+  // Listen for BurnedToken event on Goerli
+  goerliContract.on(
+    "BurnedToken",
+    async (
+      userInfo,
+      tokenAddress,
+      amount,
+      sourceChainId,
+      targetChainId,
+      timestamp,
+      event
+    ) => {
+      const data = {
+        userInfo,
+        tokenAddress,
+        amount,
+        sourceChainId,
+        targetChainId,
+        timestamp,
+      };
+
+      console.table(data);
+    }
+  );
 }
 
 main();
 
-// Queue responsible for reproceeding the events in case of failure
+// Queue responsible for reproceeding the events in case of failure (mint)
 eventQueue.process("mint", async function (job, done) {
   try {
     await handleMinting(job.data);
+    console.log("Event reprocessed successfully");
+    done();
+  } catch (e) {
+    console.log(e);
+    throw new Error("some unexpected error");
+  }
+});
+
+// Queue responsible for reproceeding the events in case of failure (burn)
+eventQueue.process("burn", async function (job, done) {
+  try {
+    await handleBurn(job.data);
     console.log("Event reprocessed successfully");
     done();
   } catch (e) {

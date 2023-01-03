@@ -52,6 +52,62 @@ export const handleMinting = async (data) => {
   const receipt = await tx.wait();
 
   console.log(
-    `Minting ${ERC20Symbol} on ${targetChainId} for user ${from} completed : ${receipt.transactionHash}`
+    `Minting ${ERC20Symbol} on ${chainInfo[targetChainId].name} for user ${from} completed : ${receipt.transactionHash}`
+  );
+};
+
+export const handleBurn = async (data) => {
+  const {
+    userInfo,
+    tokenAddress,
+    amount,
+    sourceChainId,
+    targetChainId,
+  } = data;
+
+  // Source chain provider
+  const sourceProvider = new ethers.providers.JsonRpcProvider(
+    chainInfo[sourceChainId].rpcUrl
+  );
+
+  // Bridge contract on source chain
+  const sourceContract = new ethers.Contract(
+    chainInfo[sourceChainId].contract,
+    BridgeABI,
+    sourceProvider
+  );
+
+  // Get native token address from source chain
+  const nativeTokenAddress = await sourceContract.wrappedToNative(tokenAddress);
+
+  // Target chain provider
+  const targetProvider = new ethers.providers.JsonRpcProvider(
+    chainInfo[targetChainId].rpcUrl
+  );
+
+  // Relayer wallet
+  const relayerWallet = new ethers.Wallet(
+    process.env.PRIVATE_KEY,
+    targetProvider
+  );
+
+  // Target chain contract
+  const targetContract = new ethers.Contract(
+    chainInfo[targetChainId].contract,
+    BridgeABI,
+    relayerWallet
+  );
+
+  // UnWrap token on target chain
+  const tx = await targetContract.unWrapToken(
+    userInfo,
+    nativeTokenAddress,
+    amount
+  );
+
+  const receipt = await tx.wait();
+
+  console.log(
+    `UnWrapping ${tokenAddress} on ${chainInfo[targetChainId].name} for user ${userInfo} completed : ${receipt.transactionHash}`
   );
 };

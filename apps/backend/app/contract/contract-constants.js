@@ -67,6 +67,12 @@ export const BridgeABI = [
         type: "uint256",
       },
       {
+        indexed: true,
+        internalType: "uint256",
+        name: "targetChainId",
+        type: "uint256",
+      },
+      {
         indexed: false,
         internalType: "uint256",
         name: "timestamp",
@@ -310,6 +316,11 @@ export const BridgeABI = [
       {
         internalType: "uint256",
         name: "_amount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "_targetChainId",
         type: "uint256",
       },
       {
