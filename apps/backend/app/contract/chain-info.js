@@ -15,4 +15,10 @@ export const chainInfo = {
     contract: "0x8c3489A994a9786767f227dD5b36129FdC1F809c",
     rpcUrl: process.env.MUMBAI_RPC_URL,
   },
+  97: {
+    name: "BSC Testnet",
+    chainId: 97,
+    contract: "0xe13B6ECB11ACE3CE9Bab9c7A6B1187bFB6f70556",
+    rpcUrl: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+  },
 };

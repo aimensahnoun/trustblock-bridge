@@ -107,8 +107,6 @@ function main() {
     process.env.GOERLI_RPC_URL
   );
 
-  // Listen for InitiateTransfer event on Mumbai
-
   /// Connect to contract using the provider and the contract ABI (GOERLI)
   const goerliContract = new ethers.Contract(
     chainInfo[5].contract,
@@ -174,6 +172,87 @@ function main() {
       try {
         await handleBurn(data);
         console.log("Event processed successfully | GOERLI\n");
+      } catch (e) {
+        console.log(
+          `Something went wrong while burning ${tokenAddress} for ${userInfo} on ${sourceChainId} : ${e}`
+        );
+        // Add the event to the queue to be reprocessed
+        await eventQueue.add("burn", data);
+      }
+    }
+  );
+
+   // ================================================
+  // Handling BSC Testnet events
+  const BSCProvider = new ethers.providers.JsonRpcProvider(
+    chainInfo[97].rpcUrl
+  );
+
+  /// Connect to contract using the provider and the contract ABI (GOERLI)
+  const BSCContract = new ethers.Contract(
+    chainInfo[97].contract,
+    BridgeABI,
+    BSCProvider
+  );
+
+  // Listen for InitiateTransfer event on Goerli
+  BSCContract.on(
+    "TransferInitiated",
+    async (
+      from,
+      tokenAddress,
+      sourceChainId,
+      targetChainId,
+      amount,
+      timestamp,
+      event
+    ) => {
+      const data = {
+        from,
+        tokenAddress,
+        sourceChainId,
+        targetChainId,
+        amount,
+        timestamp,
+      };
+
+      try {
+        await handleMinting(data);
+        console.log("Event processed successfully | BSC Testnet\n");
+      } catch (e) {
+        console.log(
+          `Something went wrong while minting ${tokenAddress} for ${from} on ${targetChainId} : ${e}`
+        );
+        // Add the event to the queue to be reprocessed
+        await eventQueue.add("mint", data);
+      }
+    }
+  );
+
+  // Listen for BurnedToken event on Goerli
+  BSCContract.on(
+    "BurnedToken",
+    async (
+      userInfo,
+      tokenAddress,
+      amount,
+      sourceChainId,
+      targetChainId,
+      timestamp,
+      event
+    ) => {
+      const data = {
+        userInfo,
+        tokenAddress,
+        amount,
+        sourceChainId,
+        targetChainId,
+        timestamp,
+      };
+
+      try {
+        await handleBurn(data);
+        console.log("Event processed successfully | BSC Testnet\n");
       } catch (e) {
         console.log(
           `Something went wrong while burning ${tokenAddress} for ${userInfo} on ${sourceChainId} : ${e}`
