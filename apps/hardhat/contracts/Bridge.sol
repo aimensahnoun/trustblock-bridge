@@ -55,6 +55,7 @@ contract Bridge is AccessControl {
         address tokenAddress,
         uint256 amount,
         uint256 indexed chainId,
+        uint256 indexed targetChainId,
         uint256 timestamp
     );
 
@@ -187,6 +188,7 @@ contract Bridge is AccessControl {
     function burnWrappedToken(
         string calldata _symbol,
         uint256 _amount,
+        uint256 _targetChainId,
         address _user
     ) external onlyValidAmount(_amount) onlyValidAddress(_user) {
         if (keccak256(bytes(_symbol)) == keccak256(bytes(""))) {
@@ -210,6 +212,7 @@ contract Bridge is AccessControl {
             werc20,
             _amount,
             block.chainid,
+            _targetChainId,
             block.timestamp
         );
     }
