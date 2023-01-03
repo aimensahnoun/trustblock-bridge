@@ -7,6 +7,8 @@ async function main() {
   await Bridge.deployed();
 
   console.log("Bridge deployed to:", Bridge.address);
+
+  
 }
 
 // We recommend this pattern to be able to use async/await everywhere

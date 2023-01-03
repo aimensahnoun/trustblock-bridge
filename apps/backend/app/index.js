@@ -1,8 +1,17 @@
+// Dependencies import
 import Queue from "bull";
 import { ethers } from "ethers";
-import { abi } from "./contract/contract-constants.js";
-import { chainInfo } from "./contract/chain-info.js";
+import dotenv from "dotenv";
 
+// Constants import
+import { BridgeABI } from "./contract/contract-constants.js";
+
+// Methods imports
+import { handleMinting } from "./contract/event-methods.js";
+
+dotenv.config();
+
+// Queue to handle the events in case of failure
 const eventQueue = new Queue("events", {
   redis: {
     port: parseInt(process.env.REDIS_PORT),
@@ -11,7 +20,7 @@ const eventQueue = new Queue("events", {
 });
 
 function main() {
-
+  // Handling mumbai events
   const mumbaiProvider = new ethers.providers.JsonRpcProvider(
     process.env.MUMBAI_RPC_URL
   );
@@ -19,14 +28,14 @@ function main() {
   /// Connect to contract using the provider and the contract ABI (MUMBAI)
   const mumbaiContract = new ethers.Contract(
     "0xA35Fff838182f6E47F6121Dfb236Ee3D90144ae8",
-    abi,
+    BridgeABI,
     mumbaiProvider
   );
 
   // Listen for InitiateTransfer event on Mumbai
   mumbaiContract.on(
     "TransferInitiated",
-    (
+    async (
       from,
       tokenAddress,
       sourceChainId,
@@ -38,28 +47,36 @@ function main() {
       const data = {
         from,
         tokenAddress,
-        sourceChainId: sourceChainId.toString(),
-        targetChainId: targetChainId.toString(),
-        amount: amount.toString(),
-        timestamp: timestamp.toString(),
+        sourceChainId,
+        targetChainId,
+        amount,
+        timestamp,
       };
 
-      console.table(data);
+      try {
+        await handleMinting(data);
+        console.log("Event processed successfully");
+      } catch (e) {
+        console.log(
+          `Something went wrong while minting ${tokenAddress} for ${from} on ${targetChainId} : ${e}`
+        );
+        // Add the event to the queue to be reprocessed
+        await eventQueue.add("mint", data);
+      }
     }
   );
 }
 
 main();
 
-/// Queue responsible for processing events
-eventQueue.process(function (job, done) {
-  console.log(job.data);
-
-  // Process the job here
-
-  job.progress(42);
-
-  done();
-
-  throw new Error("some unexpected error");
+// Queue responsible for reproceeding the events in case of failure
+eventQueue.process("mint", async function (job, done) {
+  try {
+    await handleMinting(job.data);
+    console.log("Event reprocessed successfully");
+    done();
+  } catch (e) {
+    console.log(e);
+    throw new Error("some unexpected error");
+  }
 });
