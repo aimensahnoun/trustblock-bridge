@@ -125,4 +125,62 @@
     color: $text-color;
     @include rounded(0.313rem);
   }
+
+  .modal {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    @include flex-container($justify: center);
+    overflow: hidden;
+    z-index: 5;
+
+    .modal-container {
+      width: 40.625rem;
+      height: 25.75rem;
+      padding: $vertical-padding 2.688rem;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.05);
+      backdrop-filter: blur(7.5px);
+      overflow: scroll;
+      background-color: $container-color;
+      @include rounded;
+
+      .title {
+        font-weight: 800;
+        font-size: 2rem;
+        display: block;
+        margin-bottom: 1.5rem;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        max-width: 100%;
+        grid-gap: 0.5rem;
+        overflow: hidden;
+
+        .option {
+          height: 5.75rem;
+          width: 9.125rem;
+          background-color: $accent-color;
+          cursor: pointer;
+          padding: 0 !important;
+          @include rounded(0.313rem);
+          @include flex-container($justify: center, $align: center);
+          gap: 0.5rem;
+
+          img {
+            height: 2.688rem;
+            width: 2.688rem;
+            object-fit: fill;
+          }
+
+          span {
+            font-weight: 700;
+            font-size: 0.875rem;
+          }
+        }
+      }
+    }
+  }
 }

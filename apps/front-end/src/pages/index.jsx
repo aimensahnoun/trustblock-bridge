@@ -7,5 +7,5 @@ const MainView = dynamic(() => import("../views/main-view"), {
 });
 
 export default function Home() {
-  return <MainView />;
+  return <MainView />
 }

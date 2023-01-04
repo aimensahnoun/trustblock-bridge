@@ -72,7 +72,7 @@ function MyApp({ Component, pageProps }) {
         })}
         chains={chains}
       >
-        <Component {...pageProps} />;
+        <Component {...pageProps} />
       </RainbowKitProvider>
     </WagmiConfig>
   );

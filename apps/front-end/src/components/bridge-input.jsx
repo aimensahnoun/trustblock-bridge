@@ -1,7 +1,7 @@
 // Utils import
-import { chainInfo } from "../../utils/chain-info";
+import { chainInfo } from "../utils/chain-info";
 
-const BridgeInput = ({ label, chain }) => {
+const BridgeInput = ({ label, chain, tokenOnClick }) => {
   return (
     <div className="action-container">
       <div className="group">
@@ -9,7 +9,7 @@ const BridgeInput = ({ label, chain }) => {
         <input className="input" type="number" placeholder="0.0" />
       </div>
 
-      <div className="group">
+      <div className="group" onClick={tokenOnClick}>
         <span className="label">Token</span>
         <div className="selector"></div>
       </div>
