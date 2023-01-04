@@ -39,8 +39,6 @@ const BridgeModal = ({ setIsOpen }) => {
     chainId: chain.id,
   });
 
-  console.log(signer);
-
   useEffect(() => {
     if (
       !signer ||

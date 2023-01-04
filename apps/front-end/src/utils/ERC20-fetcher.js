@@ -4,7 +4,14 @@ import { chainInfo } from "./chain-info";
 
 export const getAllERC20Tokens = async (walletAddress, chainId) => {
   try {
-    if (!walletAddress || !chainId || chainId === 97) return [];
+    if (!walletAddress || !chainId) return [];
+
+    if (chainId === 97) {
+      const tokenList = await axios.get(`api/BSCtokens/${walletAddress}`);
+
+
+      return tokenList.data;
+    }
 
     const data = JSON.stringify({
       jsonrpc: "2.0",
