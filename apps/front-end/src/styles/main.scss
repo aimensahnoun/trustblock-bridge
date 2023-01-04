@@ -114,16 +114,20 @@
     }
   }
 
-  .button {
+  .button-container {
     align-self: center;
-    min-width: 10.36rem;
-    height: 3.188rem;
-    border: none;
-    cursor: pointer;
-    font-weight: 700;
-    background-color: $accent-color;
-    color: $text-color;
-    @include rounded(0.313rem);
+    @include flex-container();
+    gap: .5rem;
+    .button {
+      min-width: 10.36rem;
+      height: 3.188rem;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      background-color: $accent-color;
+      color: $text-color;
+      @include rounded(0.313rem);
+    }
   }
 
   .modal {

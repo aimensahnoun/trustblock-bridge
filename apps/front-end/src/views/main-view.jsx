@@ -10,7 +10,7 @@ import {
   useConnectModal,
   useChainModal,
 } from "@rainbow-me/rainbowkit";
-import { useNetwork, useAccount, useBalance } from "wagmi";
+import { useNetwork, useAccount, useBalance, useContractRead } from "wagmi";
 import { If, Then } from "react-if";
 import { useAtom } from "jotai";
 
@@ -24,7 +24,7 @@ import BridgeModal from "../components/transaction-modal";
 import { AiOutlineArrowDown } from "react-icons/ai";
 
 // Utils import
-import { chainInfo } from "../utils/chain-info";
+import { BridgeABI, chainInfo } from "../utils/chain-info";
 import { getAllERC20Tokens } from "../utils/ERC20-fetcher";
 import {
   selectedTokenState,
@@ -64,6 +64,16 @@ const MainView = () => {
   const [toChain, setToChain] = useState(
     chain?.id ? remainingChains[0] : { id: 5 }
   );
+
+  // Checking if the selected has been bridged before
+  const { data: nativeTokenAddress, isSuccess: gotNativeToken } =
+    useContractRead({
+      address: chainInfo[chain?.id].contract,
+      abi: BridgeABI,
+      functionName: "wrappedToNative",
+      args: [selectedToken.address],
+      watch: true,
+    });
 
   // Global state
   const [_globalSelectedToken, setGlobalSelectedToken] =
@@ -175,20 +185,40 @@ const MainView = () => {
             setOpenModal("chain");
           }}
         />
-        <button
-          onClick={() => {
-            if (!isConnected) return openConnectModal();
-            setOpenModal("bridging");
-            // Setting global state
-            setGlobalSelectedToken(selectedToken);
-            setTargetChain(toChain);
-            setAmount(ethers.utils.parseEther(tokenAmount));
-            setBridgeMethod("bridge");
-          }}
-          className="button"
-        >
-          {isConnected ? "Bridge" : "Connect your wallet"}
-        </button>
+
+        <div className="button-container">
+          <button
+            onClick={() => {
+              if (!isConnected) return openConnectModal();
+              setOpenModal("bridging");
+              // Setting global state
+              setGlobalSelectedToken(selectedToken);
+              setTargetChain(toChain);
+              setAmount(ethers.utils.parseEther(tokenAmount));
+              setBridgeMethod("bridge");
+            }}
+            className="button"
+          >
+            {isConnected ? "Bridge" : "Connect your wallet"}
+          </button>
+          {gotNativeToken &&
+            nativeTokenAddress !== ethers.constants.AddressZero && (
+              <button
+                onClick={() => {
+                  if (!isConnected) return openConnectModal();
+                  setOpenModal("bridging");
+                  // Setting global state
+                  setGlobalSelectedToken(selectedToken);
+                  setTargetChain(toChain);
+                  setAmount(ethers.utils.parseEther(tokenAmount));
+                  setBridgeMethod("bridge");
+                }}
+                className="button"
+              >
+                Unwrap
+              </button>
+            )}
+        </div>
       </div>
 
       <If condition={openModal === "token"}>
