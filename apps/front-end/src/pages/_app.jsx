@@ -19,8 +19,11 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { polygonMumbai, goerli, bscTestnet } from "wagmi/chains";
-import { alchemyProvider } from "wagmi/providers/alchemy";
-import { publicProvider } from "wagmi/providers/public";
+
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+
+// Utils import
+import { chainInfo } from "../utils/chain-info";
 
 // CSS import
 import "../styles/globals.scss";
@@ -28,9 +31,11 @@ import "../styles/globals.scss";
 const { chains, provider } = configureChains(
   [polygonMumbai, goerli, bscTestnet],
   [
-    alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_MUMBAI_API }),
-    alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_GOERLI_API }),
-    publicProvider(),
+    jsonRpcProvider({
+      rpc: (chain) => ({
+        http: chainInfo[chain.id].rpcUrl,
+      }),
+    }),
   ]
 );
 

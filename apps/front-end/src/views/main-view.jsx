@@ -11,22 +11,33 @@ import {
   useChainModal,
 } from "@rainbow-me/rainbowkit";
 import { useNetwork, useAccount, useBalance } from "wagmi";
-import { If, Then, Else } from "react-if";
+import { If, Then } from "react-if";
+import { useAtom } from "jotai";
 
 // Components import
 import BridgeInput from "../components/bridge-input";
 import TokenModal from "../components/token-modal";
 import ChainModal from "../components/chain-modal";
+import BridgeModal from "../components/transaction-modal";
 
 // Assets import
 import { AiOutlineArrowDown } from "react-icons/ai";
+
+// Utils import
 import { chainInfo } from "../utils/chain-info";
 import { getAllERC20Tokens } from "../utils/ERC20-fetcher";
+import {
+  selectedTokenState,
+  amountState,
+  bridgeMethodState,
+  targetChainState,
+} from "../utils/global-state";
+import { ethers } from "ethers";
 
 const MainView = () => {
   // Wagmi hooks
   const { chain, chains } = useNetwork();
-
+  // Filtering out the current chain from the list of chains
   const remainingChains = chains.filter((c) => c?.id !== chain?.id);
 
   const { address: walletAddress, isConnected } = useAccount();
@@ -50,14 +61,22 @@ const MainView = () => {
   ]);
   const [selectedToken, setSelectedToken] = useState(tokenList[0]);
   const [tokenAmount, setTokenAmount] = useState("0.0");
-  const [toChain, setToChain] = useState(chain?.id ? remainingChains[0] : { id: 5 });
+  const [toChain, setToChain] = useState(
+    chain?.id ? remainingChains[0] : { id: 5 }
+  );
+
+  // Global state
+  const [_globalSelectedToken, setGlobalSelectedToken] =
+    useAtom(selectedTokenState);
+  const [_targetChain, setTargetChain] = useAtom(targetChainState);
+  const [_amount, setAmount] = useAtom(amountState);
+  const [_bridgeMethod, setBridgeMethod] = useAtom(bridgeMethodState);
 
   // Rainbowkit hooks
   /// responsible for opening the connect to wallet modal
   const { openConnectModal } = useConnectModal();
   /// responsible for opening the modal for selecting the chain
   const { openChainModal } = useChainModal();
-
 
   // useEffect
   useEffect(() => {
@@ -115,7 +134,7 @@ const MainView = () => {
       </nav>
 
       {/* Main body */}
-      <body className="body">
+      <div className="body">
         <span className="title">Crosschain Bridge</span>
 
         {/* From input */}
@@ -159,12 +178,18 @@ const MainView = () => {
         <button
           onClick={() => {
             if (!isConnected) return openConnectModal();
+            setOpenModal("bridging");
+            // Setting global state
+            setGlobalSelectedToken(selectedToken);
+            setTargetChain(toChain);
+            setAmount(ethers.utils.parseEther(tokenAmount));
+            setBridgeMethod("bridge");
           }}
           className="button"
         >
           {isConnected ? "Bridge" : "Connect your wallet"}
         </button>
-      </body>
+      </div>
 
       <If condition={openModal === "token"}>
         <Then>
@@ -183,6 +208,12 @@ const MainView = () => {
             chains={remainingChains}
             setSelectedChain={setToChain}
           />
+        </Then>
+      </If>
+
+      <If condition={openModal === "bridging"}>
+        <Then>
+          <BridgeModal setIsOpen={setOpenModal} />
         </Then>
       </If>
     </main>
