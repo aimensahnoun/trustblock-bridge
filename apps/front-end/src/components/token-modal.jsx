@@ -1,7 +1,7 @@
 import { chainInfo } from "../utils/chain-info";
 import Modal from "./modal";
 
-const TokenModal = ({ tokens, setIsOpen }) => {
+const TokenModal = ({ tokens, setIsOpen, setSelectedToken }) => {
   return (
     <Modal
       setIsOpen={() => {
@@ -12,15 +12,23 @@ const TokenModal = ({ tokens, setIsOpen }) => {
 
       <div className="grid">
         {
-            // array of 10 elements
-            Array(10).fill(0).map((_, i) => {
-                return <div className="option" key={i}>
-                    <img src={chainInfo[80001].tokenIcon}  alt="logo"/>
-                    <span>{chainInfo[80001].token}</span>
-                </div>
-            })
+          // array of 10 elements
+          tokens.map((token, i) => {
+            return (
+              <div
+                onClick={() => {
+                  setSelectedToken(token);
+                  setIsOpen("none");
+                }}
+                className="option"
+                key={i}
+              >
+                {token?.logo && <img src={token.logo} alt="logo" />}
+                <span>{token?.symbol}</span>
+              </div>
+            );
+          })
         }
-        
       </div>
     </Modal>
   );

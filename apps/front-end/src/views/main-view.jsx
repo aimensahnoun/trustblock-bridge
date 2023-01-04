@@ -44,6 +44,7 @@ const MainView = () => {
       address: "0x0000000000000000000000000000000000000001",
     },
   ]);
+  const [selectedToken, setSelectedToken] = useState(tokenList[0]);
 
   // Rainbowkit hooks
   const { openConnectModal } = useConnectModal();
@@ -70,8 +71,6 @@ const MainView = () => {
     })();
   }, [chain.id]);
 
-  console.log(tokenList);
-
   return (
     <main className="main-container">
       <Head>
@@ -95,6 +94,7 @@ const MainView = () => {
         <BridgeInput
           label="From"
           chain={chain}
+          token={selectedToken}
           tokenOnClick={() => {
             if (!isConnected) return openConnectModal();
             setOpenModal("token");
@@ -105,7 +105,11 @@ const MainView = () => {
           }}
         />
         <AiOutlineArrowDown className="arrow" />
-        <BridgeInput label="To" chain={remainingChains[0]} />
+        <BridgeInput
+          label="To"
+          chain={remainingChains[0]}
+          token={selectedToken}
+        />
         <button
           onClick={() => {
             if (!isConnected) return openConnectModal();
@@ -118,7 +122,7 @@ const MainView = () => {
 
       <If condition={openModal === "token"}>
         <Then>
-          <TokenModal setIsOpen={setOpenModal} />
+          <TokenModal setIsOpen={setOpenModal} tokens={tokenList} setSelectedToken={setSelectedToken} />
         </Then>
       </If>
     </main>
