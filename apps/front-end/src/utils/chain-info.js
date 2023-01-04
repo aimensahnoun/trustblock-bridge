@@ -13,7 +13,7 @@ export const chainInfo = {
     chainId: 80001,
     contract: "0x8c3489A994a9786767f227dD5b36129FdC1F809c",
     rpcUrl: process.env.NEXT_PUBLIC_MUMBAI_RPC_URL,
-    token: "Matic",
+    token: "MATIC",
     tokenIcon: "https://cryptologos.cc/logos/polygon-matic-logo.png",
   },
   97: {
@@ -21,7 +21,7 @@ export const chainInfo = {
     chainId: 97,
     contract: "0xe13B6ECB11ACE3CE9Bab9c7A6B1187bFB6f70556",
     rpcUrl: "https://data-seed-prebsc-1-s1.binance.org:8545/",
-    token: "TBNB",
+    token: "tBNB",
     tokenIcon:
       "https://seeklogo.com/images/B/binance-smart-chain-bsc-logo-9C34053D61-seeklogo.com.png",
   },

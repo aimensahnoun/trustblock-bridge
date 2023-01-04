@@ -1,7 +1,7 @@
 // Utils import
 import { chainInfo } from "../utils/chain-info";
 
-const BridgeInput = ({ label, chain, tokenOnClick }) => {
+const BridgeInput = ({ label, chain, tokenOnClick ,chainOnClick}) => {
   return (
     <div className="action-container">
       <div className="group">
@@ -14,7 +14,7 @@ const BridgeInput = ({ label, chain, tokenOnClick }) => {
         <div className="selector"></div>
       </div>
 
-      <div className="group">
+      <div className="group" onClick={chainOnClick}>
         <span className="label">Chain</span>
         <div className="selector">
           <img src={chainInfo[chain?.id]?.tokenIcon} />
