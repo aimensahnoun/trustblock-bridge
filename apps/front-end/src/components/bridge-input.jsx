@@ -1,12 +1,33 @@
+// Dependencies import
+import { useAtom } from "jotai";
+
 // Utils import
 import { chainInfo } from "../utils/chain-info";
+import { tokenAmountState } from "../utils/global-state";
 
-const BridgeInput = ({ label, chain, tokenOnClick, chainOnClick, token }) => {
+const BridgeInput = ({
+  label,
+  chain,
+  tokenOnClick,
+  chainOnClick,
+  token,
+  isReadOnly,
+  onChange,
+  value,
+}) => {
+
   return (
     <div className="action-container">
       <div className="group">
         <span className="label">{label}</span>
-        <input className="input" type="number" placeholder="0.0" />
+        <input
+          className="input"
+          readOnly={isReadOnly}
+          type="number"
+          placeholder="0.0"
+          onChange={onChange}
+          value={value}
+        />
       </div>
 
       <div className="group" onClick={tokenOnClick}>

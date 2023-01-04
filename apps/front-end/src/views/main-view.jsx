@@ -45,6 +45,7 @@ const MainView = () => {
     },
   ]);
   const [selectedToken, setSelectedToken] = useState(tokenList[0]);
+  const [tokenAmount, setTokenAmount] = useState("0.0");
 
   // Rainbowkit hooks
   /// responsible for opening the connect to wallet modal
@@ -125,12 +126,23 @@ const MainView = () => {
             if (!isConnected) return openConnectModal();
             openChainModal();
           }}
+          onChange={(e) => {
+            if (parseFloat(e.target.value) < 0)
+              e.target.value = Math.abs(parseFloat(e.target.value)).toString();
+            if (parseFloat(e.target.value) > parseFloat(selectedToken.balance))
+              e.target.value = selectedToken.balance;
+
+            setTokenAmount(e.target.value);
+          }}
+          isReadOnly={false}
         />
         <AiOutlineArrowDown className="arrow" />
         <BridgeInput
           label="To"
           chain={remainingChains[0]}
           token={selectedToken}
+          isReadOnly={true}
+          value={tokenAmount}
         />
         <button
           onClick={() => {
