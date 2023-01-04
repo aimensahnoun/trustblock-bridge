@@ -11,12 +11,14 @@ dotenv.config();
 export const handleMinting = async (data) => {
   const { from, tokenAddress, targetChainId, sourceChainId, amount } = data;
 
+  console.log("Starting to mint==========")
+
   const sourceProvider = new ethers.providers.JsonRpcProvider(
     chainInfo[sourceChainId].rpcUrl
   );
 
-  let ERC20Name = "ETH";
-  let ERC20Symbol = "ETH";
+  let ERC20Name = chainInfo[sourceChainId].nativeToken;
+  let ERC20Symbol = chainInfo[sourceChainId].nativeToken;
 
   //  If the token is not ETH, then fetch the name and symbol of the token
   if (tokenAddress !== "0x0000000000000000000000000000000000000001") {
@@ -68,6 +70,8 @@ export const handleMinting = async (data) => {
 export const handleBurn = async (data) => {
   const { userInfo, tokenAddress, amount, sourceChainId, targetChainId } = data;
 
+  console.log("Starting to burn==========")
+
   // Source chain provider
   const sourceProvider = new ethers.providers.JsonRpcProvider(
     chainInfo[sourceChainId].rpcUrl
@@ -81,7 +85,8 @@ export const handleBurn = async (data) => {
   );
 
   // Get native token address from source chain
-  const nativeTokenAddress = await sourceContract.wrappedToNative(tokenAddress);
+  const nativeToken = await sourceContract.wrappedToNative(tokenAddress);
+  const nativeTokenAddress = nativeToken.tokenAddress;
 
   // Target chain provider
   const targetProvider = new ethers.providers.JsonRpcProvider(
