@@ -68,7 +68,7 @@ const MainView = () => {
   // Checking if the selected has been bridged before
   const { data: nativeTokenAddress, isSuccess: gotNativeToken } =
     useContractRead({
-      address: chainInfo[chain?.id].contract,
+      address: chainInfo[chain?.id]?.contract,
       abi: BridgeABI,
       functionName: "wrappedToNative",
       args: [selectedToken.address],
@@ -125,6 +125,8 @@ const MainView = () => {
 
     // Setting the selected token to native token
     setSelectedToken(nativeToken);
+
+    setToChain(chain?.id ? remainingChains[0] : { id: 5 });
   }, [chain?.id]);
 
   return (
@@ -202,7 +204,8 @@ const MainView = () => {
             {isConnected ? "Bridge" : "Connect your wallet"}
           </button>
           {gotNativeToken &&
-            nativeTokenAddress !== ethers.constants.AddressZero && (
+            nativeTokenAddress?.tokenAddress !== ethers.constants.AddressZero &&
+            parseInt(nativeTokenAddress.chainId.toString()) === toChain?.id && (
               <button
                 onClick={() => {
                   if (!isConnected) return openConnectModal();

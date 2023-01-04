@@ -18,15 +18,11 @@ export const bridgeToken = async ({
 
   const bridgeContractAddress = chainInfo[sourceNetwork.id].contract;
 
-
   const bridgeContract = new ethers.Contract(
     bridgeContractAddress,
     BridgeABI,
     signer
   );
-
-  const tokenFactory = await bridgeContract?.tokenFactory();
-
 
   const tokenAddress = selectedToken.address;
 
@@ -40,10 +36,8 @@ export const bridgeToken = async ({
 
     const receipt = await approvalTransaction.wait();
 
-    return receipt.transactionHash;
+    console.log(receipt.transactionHash);
   }
-
-
 
   const bridgeTransaction = await bridgeContract?.initiateTransfer(
     tokenAddress,
@@ -57,5 +51,6 @@ export const bridgeToken = async ({
     }
   );
 
-  await bridgeTransaction.wait();
+  const receipt = await bridgeTransaction.wait();
+  return receipt.transactionHash;
 };
