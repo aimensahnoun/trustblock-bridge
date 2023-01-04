@@ -26,6 +26,9 @@ import { getAllERC20Tokens } from "../utils/ERC20-fetcher";
 const MainView = () => {
   // Wagmi hooks
   const { chain, chains } = useNetwork();
+
+  const remainingChains = chains.filter((c) => c?.id !== chain?.id);
+
   const { address: walletAddress, isConnected } = useAccount();
   const { data: nativeBalance } = useBalance({
     address: walletAddress,
@@ -37,17 +40,17 @@ const MainView = () => {
   const [openModal, setOpenModal] = useState("none");
   const [tokenList, setTokenList] = useState([
     {
-      name: chainInfo[chain.id]?.token,
-      symbol: chainInfo[chain.id]?.token,
+      name: chainInfo[chain?.id ? chain?.id : 5]?.token,
+      symbol: chainInfo[chain?.id ? chain?.id : 5]?.token,
       decimals: 18,
-      logo: chainInfo[chain.id]?.tokenIcon,
-      balance: nativeBalance.formatted,
+      logo: chainInfo[chain?.id ? chain?.id : 5]?.tokenIcon,
+      balance: nativeBalance?.formatted,
       address: "0x0000000000000000000000000000000000000001",
     },
   ]);
   const [selectedToken, setSelectedToken] = useState(tokenList[0]);
   const [tokenAmount, setTokenAmount] = useState("0.0");
-  const [toChain, setToChain] = useState(chains[0]);
+  const [toChain, setToChain] = useState(chain?.id ? remainingChains[0] : { id: 5 });
 
   // Rainbowkit hooks
   /// responsible for opening the connect to wallet modal
@@ -55,7 +58,6 @@ const MainView = () => {
   /// responsible for opening the modal for selecting the chain
   const { openChainModal } = useChainModal();
 
-  const remainingChains = chains.filter((c) => c?.id !== chain?.id);
 
   // useEffect
   useEffect(() => {
@@ -65,26 +67,26 @@ const MainView = () => {
       const tokens = await getAllERC20Tokens(walletAddress, chain.id);
       setTokenList([
         {
-          name: chainInfo[chain.id]?.token,
-          symbol: chainInfo[chain.id]?.token,
+          name: chainInfo[chain?.id ? chain?.id : 5]?.token,
+          symbol: chainInfo[chain?.id ? chain?.id : 5]?.token,
           decimals: 18,
-          logo: chainInfo[chain.id]?.tokenIcon,
+          logo: chainInfo[chain?.id ? chain?.id : 5]?.tokenIcon,
           balance: nativeBalance.formatted,
           address: "0x0000000000000000000000000000000000000001",
         },
         ...tokens,
       ]);
     })();
-  }, [chain.id]);
+  }, [chain?.id]);
 
   useEffect(() => {
     // Responsibe for updating the native list when user changes the chain
     if (!isConnected) return;
     const nativeToken = {
-      name: chainInfo[chain.id]?.token,
-      symbol: chainInfo[chain.id]?.token,
+      name: chainInfo[chain?.id ? chain?.id : 5]?.token,
+      symbol: chainInfo[chain?.id ? chain?.id : 5]?.token,
       decimals: 18,
-      logo: chainInfo[chain.id]?.tokenIcon,
+      logo: chainInfo[chain?.id ? chain?.id : 5]?.tokenIcon,
       balance: nativeBalance.formatted,
       address: "0x0000000000000000000000000000000000000001",
     };
@@ -94,7 +96,7 @@ const MainView = () => {
 
     // Setting the selected token to native token
     setSelectedToken(nativeToken);
-  }, [chain.id]);
+  }, [chain?.id]);
 
   return (
     <main className="main-container">
@@ -119,7 +121,7 @@ const MainView = () => {
         {/* From input */}
         <BridgeInput
           label="From"
-          chain={chain}
+          chain={chain ? chain : { id: 5 }}
           token={selectedToken}
           tokenOnClick={() => {
             if (!isConnected) return openConnectModal();
@@ -149,7 +151,10 @@ const MainView = () => {
           token={selectedToken}
           isReadOnly={true}
           value={tokenAmount}
-          chainOnClick={() => setOpenModal("chain")}
+          chainOnClick={() => {
+            if (!isConnected) return openConnectModal();
+            setOpenModal("chain");
+          }}
         />
         <button
           onClick={() => {
