@@ -100,7 +100,7 @@ const MainView = () => {
           symbol: chainInfo[chain?.id ? chain?.id : 5]?.token,
           decimals: 18,
           logo: chainInfo[chain?.id ? chain?.id : 5]?.tokenIcon,
-          balance: nativeBalance.formatted,
+          balance: nativeBalance?.formatted,
           address: "0x0000000000000000000000000000000000000001",
         },
         ...tokens,
@@ -116,7 +116,7 @@ const MainView = () => {
       symbol: chainInfo[chain?.id ? chain?.id : 5]?.token,
       decimals: 18,
       logo: chainInfo[chain?.id ? chain?.id : 5]?.tokenIcon,
-      balance: nativeBalance.formatted,
+      balance: nativeBalance?.formatted,
       address: "0x0000000000000000000000000000000000000001",
     };
 
