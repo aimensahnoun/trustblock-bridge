@@ -22,11 +22,17 @@ const config: HardhatUserConfig = {
       accounts: [process.env.PRIVATE_KEY as string],
       allowUnlimitedContractSize: true,
     },
+    bscTestnet: {
+      url: "https://data-seed-prebsc-1-s1.binance.org:8545/",
+      accounts: [process.env.PRIVATE_KEY as string],
+      allowUnlimitedContractSize: true,
+    },
   },
   etherscan: {
     apiKey: {
       polygonMumbai: process.env.POLYSCAN || "",
       goerli: process.env.ETHERSCAN || "",
+      bscTestnet: process.env.BSCSCAN || "",
     },
   },
   solidity: {

@@ -90,7 +90,8 @@ describe("Testing Bridge Contract", function () {
           "Name",
           "0x0000000000000000000000000000000000000000",
           testErc20Address,
-          1000
+          1000,
+          5
         )
       ).to.be.revertedWithCustomError(bridge, "Bridge__CannotUseZeroAddress");
     });
@@ -102,7 +103,8 @@ describe("Testing Bridge Contract", function () {
           "Name",
           accounts[1].address,
           "0x0000000000000000000000000000000000000000",
-          1000
+          1000,
+          5
         )
       ).to.be.revertedWithCustomError(bridge, "Bridge__CannotUseZeroAddress");
     });
@@ -114,7 +116,8 @@ describe("Testing Bridge Contract", function () {
           "Name",
           accounts[1].address,
           testErc20Address,
-          0
+          0,
+          5
         )
       ).to.be.revertedWithCustomError(bridge, "Bridge__FundsCannotBeZero");
     });
@@ -123,7 +126,14 @@ describe("Testing Bridge Contract", function () {
       await expect(
         bridge
           .connect(accounts[1])
-          .mintToken("TSY", "Name", accounts[1].address, testErc20Address, 1000)
+          .mintToken(
+            "TSY",
+            "Name",
+            accounts[1].address,
+            testErc20Address,
+            1000,
+            5
+          )
       ).to.be.revertedWithCustomError(
         bridge,
         "Bridge__NotAllowedToDoThisAction"
@@ -137,7 +147,8 @@ describe("Testing Bridge Contract", function () {
           "Name",
           accounts[1].address,
           testErc20Address,
-          1000
+          1000,
+          5
         )
       ).to.be.revertedWithCustomError(
         bridge,
@@ -147,7 +158,14 @@ describe("Testing Bridge Contract", function () {
 
     it("Should revert if name is empty", async () => {
       await expect(
-        bridge.mintToken("TST", "", accounts[1].address, testErc20Address, 1000)
+        bridge.mintToken(
+          "TST",
+          "",
+          accounts[1].address,
+          testErc20Address,
+          1000,
+          5
+        )
       ).to.be.revertedWithCustomError(bridge, "Bridge__TokenNameCannotBeEmpty");
     });
 
@@ -158,7 +176,8 @@ describe("Testing Bridge Contract", function () {
           "TestToken",
           accounts[0].address,
           testErc20Address,
-          100
+          100,
+          5
         )
       ).to.emit(bridge, "TokenMinted");
 
@@ -215,7 +234,8 @@ describe("Testing Bridge Contract", function () {
         "TestToken",
         accounts[1].address,
         testErc20Address,
-        100
+        100,
+        5
       );
 
       await expect(
@@ -229,7 +249,8 @@ describe("Testing Bridge Contract", function () {
         "TestToken",
         accounts[0].address,
         testErc20Address,
-        100
+        100,
+        5
       );
 
       const bridgeFactoryAddress = await bridge.tokenFactory();
@@ -297,7 +318,8 @@ describe("Testing Bridge Contract", function () {
         "TestToken",
         accounts[0].address,
         testErc20Address,
-        1000
+        1000,
+        5
       );
 
       const bridgeBalance = await testErc20.balanceOf(bridge.address);
@@ -331,7 +353,8 @@ describe("Testing Bridge Contract", function () {
         "ETH",
         accounts[0].address,
         "0x0000000000000000000000000000000000000001",
-        1000
+        1000,
+        5
       );
 
       //   ETH balance of Bridge before

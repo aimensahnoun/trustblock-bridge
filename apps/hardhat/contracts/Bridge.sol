@@ -31,6 +31,12 @@ contract Bridge is AccessControl {
         tokenFactory = new TokenFactory();
     }
 
+    // Structs
+    struct NativeToken {
+        address tokenAddress;
+        uint256 chainId;
+    }
+
     // Events
     event TransferInitiated(
         address indexed user,
@@ -92,7 +98,7 @@ contract Bridge is AccessControl {
 
     /// @notice a mapping that stores the native token address for each wrapped token
     /// @dev mapping (address wrapperTokenAddress => address nativeTokenAddress)
-    mapping(address => address) public wrappedToNative;
+    mapping(address => NativeToken) public wrappedToNative;
 
     /// @notice a method to transfer tokens from the user to the bridge contract, and start the bridging process
     /// @param _tokenAddress the address of the token to be bridged
@@ -145,7 +151,8 @@ contract Bridge is AccessControl {
         string calldata _tokenName,
         address _to,
         address _tokenAddress,
-        uint256 _amount
+        uint256 _amount,
+        uint256 _sourceChainId
     )
         external
         onlyValidAddress(_to)
@@ -165,7 +172,8 @@ contract Bridge is AccessControl {
         address werc20 = tokenFactory.getWERC20(tokenSymbol);
         if (werc20 == address(0)) {
             werc20 = tokenFactory.createWrapperToken(_tokenName, tokenSymbol);
-            wrappedToNative[werc20] = _tokenAddress;
+            wrappedToNative[werc20].tokenAddress = _tokenAddress;
+            wrappedToNative[werc20].chainId = _sourceChainId;
         }
 
         tokenFactory.mint(tokenSymbol, _to, _amount);
