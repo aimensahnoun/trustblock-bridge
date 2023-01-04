@@ -11,24 +11,21 @@ const TokenModal = ({ tokens, setIsOpen, setSelectedToken }) => {
       <span className="title">Pick your token</span>
 
       <div className="grid">
-        {
-          // array of 10 elements
-          tokens.map((token, i) => {
-            return (
-              <div
-                onClick={() => {
-                  setSelectedToken(token);
-                  setIsOpen("none");
-                }}
-                className="option"
-                key={i}
-              >
-                {token?.logo && <img src={token.logo} alt="logo" />}
-                <span>{token?.symbol}</span>
-              </div>
-            );
-          })
-        }
+        {tokens.map((token, i) => {
+          return (
+            <div
+              onClick={() => {
+                setSelectedToken(token);
+                setIsOpen("none");
+              }}
+              className="option"
+              key={i}
+            >
+              {token?.logo && <img src={token.logo} alt="logo" />}
+              <span>{token?.symbol}</span>
+            </div>
+          );
+        })}
       </div>
     </Modal>
   );

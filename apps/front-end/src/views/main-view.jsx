@@ -47,14 +47,17 @@ const MainView = () => {
   const [selectedToken, setSelectedToken] = useState(tokenList[0]);
 
   // Rainbowkit hooks
+  /// responsible for opening the connect to wallet modal
   const { openConnectModal } = useConnectModal();
+  /// responsible for opening the modal for selecting the chain
   const { openChainModal } = useChainModal();
 
   const remainingChains = chains.filter((c) => c?.id !== chain?.id);
 
   // useEffect
   useEffect(() => {
-    if (!isConnected || chain.id === 97) return;
+    // Responsible for fetching all ERC20 tokens in user's wallet for current chain
+    if (!isConnected) return;
     (async () => {
       const tokens = await getAllERC20Tokens(walletAddress, chain.id);
       setTokenList([
@@ -69,6 +72,25 @@ const MainView = () => {
         ...tokens,
       ]);
     })();
+  }, [chain.id]);
+
+  useEffect(() => {
+    // Responsibe for updating the native list when user changes the chain
+    if (!isConnected) return;
+    const nativeToken = {
+      name: chainInfo[chain.id]?.token,
+      symbol: chainInfo[chain.id]?.token,
+      decimals: 18,
+      logo: chainInfo[chain.id]?.tokenIcon,
+      balance: nativeBalance.formatted,
+      address: "0x0000000000000000000000000000000000000001",
+    };
+
+    // Replacing old tokens list with native token
+    setTokenList([nativeToken]);
+
+    // Setting the selected token to native token
+    setSelectedToken(nativeToken);
   }, [chain.id]);
 
   return (
@@ -122,7 +144,11 @@ const MainView = () => {
 
       <If condition={openModal === "token"}>
         <Then>
-          <TokenModal setIsOpen={setOpenModal} tokens={tokenList} setSelectedToken={setSelectedToken} />
+          <TokenModal
+            setIsOpen={setOpenModal}
+            tokens={tokenList}
+            setSelectedToken={setSelectedToken}
+          />
         </Then>
       </If>
     </main>
