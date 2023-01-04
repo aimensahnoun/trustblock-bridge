@@ -21,7 +21,6 @@ import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { polygonMumbai, goerli, bscTestnet } from "wagmi/chains";
 
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
-
 // Utils import
 import { chainInfo } from "../utils/chain-info";
 
@@ -68,7 +67,6 @@ const wagmiClient = createClient({
 });
 
 function MyApp({ Component, pageProps }) {
-  
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider
