@@ -18,7 +18,7 @@ const config: HardhatUserConfig = {
       allowUnlimitedContractSize: true,
     },
     goerli: {
-      url: process.env.ALCHEMY_GOERELI_KEY,
+      url: process.env.ALCHEMY_GOERELI_RPC_URL,
       accounts: [process.env.PRIVATE_KEY as string],
       allowUnlimitedContractSize: true,
     },

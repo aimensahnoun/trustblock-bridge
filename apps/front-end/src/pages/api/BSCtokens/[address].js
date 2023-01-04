@@ -5,19 +5,17 @@ const Moralis = require("moralis").default;
 const { EvmChain } = require("@moralisweb3/common-evm-utils");
 
 export default async function handler(req, res) {
-
   let version;
   try {
-     version = await Moralis.EvmApi.utils.web3ApiVersion();
+    version = await Moralis.EvmApi.utils.web3ApiVersion();
   } catch (e) {
-    console.log("Moralis not initialized yet")
+    console.log("Moralis not initialized yet");
   }
 
   // Check if Moralis is already initialized
   if (!version) {
     await Moralis.start({
-      apiKey:
-        "JftI0XSGn98d8aWm8jGDueHqqSTw1A9ahuSHdJxg02tVwHHp21QrkSg3iRBmGVGg",
+      apiKey: process.env.MORALIS_API,
     });
   }
 
