@@ -3,13 +3,19 @@ import { useEffect, useState } from "react";
 
 // Dependencies import
 import { useAtom } from "jotai";
-import { useContract, useNetwork, useProvider, useSigner } from "wagmi";
+import {
+  useAccount,
+  useContract,
+  useNetwork,
+  useProvider,
+  useSigner,
+} from "wagmi";
 
 // Custom component import
 import Modal from "./modal";
 
 // Methods import
-import { bridgeToken } from "../utils/bridge-methods";
+import { bridgeToken, burnToken } from "../utils/bridge-methods";
 
 // utils import
 import {
@@ -34,6 +40,7 @@ const BridgeModal = ({ setIsOpen }) => {
 
   // wagmi hooks
   const { chain } = useNetwork();
+  const { address } = useAccount();
   const { data: signer, isLoading: isLoadingSigner } = useSigner();
   const { data } = useProvider({
     chainId: chain.id,
@@ -65,6 +72,18 @@ const BridgeModal = ({ setIsOpen }) => {
         setHash(txHash);
         setLoadingState("complete");
       } else {
+        setLoadingState("unwrapping");
+        const txHash = await burnToken({
+          amount,
+          selectedToken,
+          signer,
+          targetNetwork: targetChain,
+          sourceNetwork: chain,
+
+          user: address,
+        });
+        setHash(txHash);
+        setLoadingState("complete");
       }
     })();
   }, [
@@ -78,14 +97,15 @@ const BridgeModal = ({ setIsOpen }) => {
   ]);
 
   return (
-    <Modal
-      setIsOpen={() => {
-        setIsOpen("none");
-      }}
-    >
+    <Modal>
       <If condition={loadingState === "bridging"}>
         <Then>
           <span className="title">Bridging Token...</span>
+        </Then>
+      </If>
+      <If condition={loadingState === "unwrapping"}>
+        <Then>
+          <span className="title">UnWrapping Token...</span>
         </Then>
       </If>
       <If condition={loadingState === "complete"}>
@@ -93,6 +113,15 @@ const BridgeModal = ({ setIsOpen }) => {
           <span className="title">Bridging Complete!</span>
           <span className="subtitle">
             <span>hash : {hash}</span>
+
+            <button
+              className="button"
+              onClick={() => {
+                setIsOpen("none");
+              }}
+            >
+              Close
+            </button>
           </span>
         </Then>
       </If>

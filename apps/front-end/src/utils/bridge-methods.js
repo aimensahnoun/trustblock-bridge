@@ -54,3 +54,61 @@ export const bridgeToken = async ({
   const receipt = await bridgeTransaction.wait();
   return receipt.transactionHash;
 };
+
+export const burnToken = async ({
+  selectedToken,
+  amount,
+  targetNetwork,
+  sourceNetwork,
+  user,
+  signer,
+}) => {
+  if (!signer) throw new Error("Signer not found");
+
+  if (!selectedToken || !amount || !targetNetwork || !user)
+    throw new Error("Invalid parameters");
+
+  const tokenSymbol = selectedToken.symbol;
+  const tokenAddress = selectedToken.address;
+
+  // Connect to token contract
+  const tokenContract = new ethers.Contract(tokenAddress, ERC20ABI, signer);
+
+  // Connect to bridge contract
+  const bridgeContract = new ethers.Contract(
+    chainInfo[sourceNetwork.id].contract,
+    BridgeABI,
+    signer
+  );
+
+
+
+
+  const tokenFactory = await bridgeContract?.tokenFactory();
+
+  console.log("Token Factory: ", tokenFactory)
+
+
+
+  // Approve token transfer
+  const approvalTransaction = await tokenContract?.approve(
+    tokenFactory,
+    amount
+  );
+
+  const receipt1 = await approvalTransaction.wait();
+
+  console.log(receipt1.transactionHash);
+
+  // Burn token
+  const burnTransaction = await bridgeContract?.burnWrappedToken(
+    tokenSymbol,
+    amount,
+    targetNetwork.id,
+    user
+  );
+
+  const receipt2 = await burnTransaction.wait();
+
+  return receipt2.transactionHash;
+};

@@ -1,5 +1,5 @@
 // React import
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // NextJs import
 import Head from "next/head";
@@ -129,6 +129,14 @@ const MainView = () => {
     setToChain(chain?.id ? remainingChains[0] : { id: 5 });
   }, [chain?.id]);
 
+  useEffect(() => {
+    // get element with class "bridge-input" and set focus on it
+
+    document.getElementsByClassName("bridge-input")[0].value = "";
+
+    setTokenAmount("0.0");
+  }, [selectedToken]);
+
   return (
     <main className="main-container">
       <Head>
@@ -151,6 +159,7 @@ const MainView = () => {
 
         {/* From input */}
         <BridgeInput
+          className="bridge-input"
           label="From"
           chain={chain ? chain : { id: 5 }}
           token={selectedToken}
@@ -214,7 +223,7 @@ const MainView = () => {
                   setGlobalSelectedToken(selectedToken);
                   setTargetChain(toChain);
                   setAmount(ethers.utils.parseEther(tokenAmount));
-                  setBridgeMethod("bridge");
+                  setBridgeMethod("burn");
                 }}
                 className="button"
               >

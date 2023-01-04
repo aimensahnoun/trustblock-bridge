@@ -14,14 +14,14 @@ const BridgeInput = ({
   isReadOnly,
   onChange,
   value,
+  className,
 }) => {
-
   return (
     <div className="action-container">
       <div className="group">
         <span className="label">{label}</span>
         <input
-          className="input"
+          className={`input ${className}`}
           readOnly={isReadOnly}
           type="number"
           placeholder="0.0"

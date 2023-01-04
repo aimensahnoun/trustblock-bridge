@@ -12,6 +12,7 @@ const TokenModal = ({ tokens, setIsOpen, setSelectedToken }) => {
 
       <div className="grid">
         {tokens.map((token, i) => {
+          if (parseFloat(token?.balance) === 0) return null;
           return (
             <div
               onClick={() => {
