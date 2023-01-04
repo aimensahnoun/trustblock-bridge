@@ -16,6 +16,7 @@ import { If, Then, Else } from "react-if";
 // Components import
 import BridgeInput from "../components/bridge-input";
 import TokenModal from "../components/token-modal";
+import ChainModal from "../components/chain-modal";
 
 // Assets import
 import { AiOutlineArrowDown } from "react-icons/ai";
@@ -46,6 +47,7 @@ const MainView = () => {
   ]);
   const [selectedToken, setSelectedToken] = useState(tokenList[0]);
   const [tokenAmount, setTokenAmount] = useState("0.0");
+  const [toChain, setToChain] = useState(chains[0]);
 
   // Rainbowkit hooks
   /// responsible for opening the connect to wallet modal
@@ -114,6 +116,7 @@ const MainView = () => {
       <body className="body">
         <span className="title">Crosschain Bridge</span>
 
+        {/* From input */}
         <BridgeInput
           label="From"
           chain={chain}
@@ -136,13 +139,17 @@ const MainView = () => {
           }}
           isReadOnly={false}
         />
+
         <AiOutlineArrowDown className="arrow" />
+
+        {/* To input */}
         <BridgeInput
           label="To"
-          chain={remainingChains[0]}
+          chain={toChain}
           token={selectedToken}
           isReadOnly={true}
           value={tokenAmount}
+          chainOnClick={() => setOpenModal("chain")}
         />
         <button
           onClick={() => {
@@ -160,6 +167,16 @@ const MainView = () => {
             setIsOpen={setOpenModal}
             tokens={tokenList}
             setSelectedToken={setSelectedToken}
+          />
+        </Then>
+      </If>
+
+      <If condition={openModal === "chain"}>
+        <Then>
+          <ChainModal
+            setIsOpen={setOpenModal}
+            chains={remainingChains}
+            setSelectedChain={setToChain}
           />
         </Then>
       </If>
