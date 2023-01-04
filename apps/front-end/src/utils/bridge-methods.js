@@ -71,6 +71,7 @@ export const burnToken = async ({
   const tokenSymbol = selectedToken.symbol;
   const tokenAddress = selectedToken.address;
 
+
   // Connect to token contract
   const tokenContract = new ethers.Contract(tokenAddress, ERC20ABI, signer);
 
@@ -83,10 +84,7 @@ export const burnToken = async ({
 
 
 
-
   const tokenFactory = await bridgeContract?.tokenFactory();
-
-  console.log("Token Factory: ", tokenFactory)
 
 
 

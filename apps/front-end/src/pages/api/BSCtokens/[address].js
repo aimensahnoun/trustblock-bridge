@@ -35,7 +35,6 @@ export default async function handler(req, res) {
     };
   });
 
-  console.log(tokens);
 
   res.status(200).json(tokens);
 }
