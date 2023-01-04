@@ -9,14 +9,22 @@ import { ERC20Abi, BridgeABI } from "./contract-constants.js";
 dotenv.config();
 
 export const handleMinting = async (data) => {
-  const { from, tokenAddress, targetChainId, amount } = data;
+  const { from, tokenAddress, targetChainId, sourceChainId, amount } = data;
+
+  const sourceProvider = new ethers.providers.JsonRpcProvider(
+    chainInfo[sourceChainId].rpcUrl
+  );
 
   let ERC20Name = "ETH";
   let ERC20Symbol = "ETH";
 
   //  If the token is not ETH, then fetch the name and symbol of the token
   if (tokenAddress !== "0x0000000000000000000000000000000000000001") {
-    const tokenContract = new ethers.Contract(tokenAddress, ERC20Abi, provider);
+    const tokenContract = new ethers.Contract(
+      tokenAddress,
+      ERC20Abi,
+      sourceProvider
+    );
 
     ERC20Name = await tokenContract.name();
     ERC20Symbol = await tokenContract.symbol();
@@ -46,7 +54,8 @@ export const handleMinting = async (data) => {
     ERC20Name,
     from,
     tokenAddress,
-    amount
+    amount,
+    sourceChainId
   );
 
   const receipt = await tx.wait();
@@ -57,13 +66,7 @@ export const handleMinting = async (data) => {
 };
 
 export const handleBurn = async (data) => {
-  const {
-    userInfo,
-    tokenAddress,
-    amount,
-    sourceChainId,
-    targetChainId,
-  } = data;
+  const { userInfo, tokenAddress, amount, sourceChainId, targetChainId } = data;
 
   // Source chain provider
   const sourceProvider = new ethers.providers.JsonRpcProvider(
